@@ -1,0 +1,41 @@
+mixin stream(tweets)
+  each tweet in tweets
+    .span4
+      blockquote
+        p #{tweet.content}
+        small #{tweet.actor.displayName} at #{new Date(tweet.published).toDateString()}
+
+!!!
+html
+  head
+    title Twitter - #{username}
+    script(src="http://code.jquery.com/jquery-1.9.1.min.js")
+    link(href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css", rel="stylesheet")
+    script(src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js")
+  body
+    .container
+      .row
+        .span12
+          h1 #{username}
+      .row
+        .span12
+          h2 Compose
+          form.form-inline(method="post", action="/tweet")
+            input(type="hidden", name="username", value="#{username}")
+            input.input-xxlarge(type="text", name="tweet")
+            button.btn(type="submit") Tweet
+      .row
+        .span4
+          h2 Sent
+          mixin stream(sent)
+        .span4
+          h2 Inbox
+          mixin stream(inbox)
+        .span4
+          h2 Follow
+          each user in users
+            if user != username && following.indexOf(user) == -1
+              form.form-inline(method="post", action="/follow")
+                input(type="hidden", name="from", value="#{username}")
+                input(type="hidden", name="to", value="#{user}")
+                input.btn.btn-primary(type="submit", value="Follow #{user}")

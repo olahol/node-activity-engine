@@ -1,0 +1,22 @@
+{
+  "name": "activity-engine",
+  "description": "",
+  "version": "0.0.1",
+  "author": "Ola Holmström <olaholmstrom+github@gmail.com>",
+  "keywords": [],
+  "main": "./lib/index.js",
+  "dependencies": {
+    "underscore": "1.4.4",
+    "redis": "0.8.2",
+    "async": "0.2.5",
+    "idgen": "1.2.0"
+  },
+  "scripts": {
+    "test": "nodeunit test/",
+    "prepublish": "mkdir -p lib/ && coffee -o lib/ -c src/"
+  },
+  "devDependencies": {
+    "nodeunit": "*",
+    "express": "*"
+  }
+}
