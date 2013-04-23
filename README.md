@@ -47,29 +47,29 @@ activies from that entitiy.
 
 ## API
 
-### ActivityStream.sent(entity, offset, take, cb(err, activities))
-### ActivityStream.inbox(entity, offset, take, cb(err, activities))
+### Engine.sent(entity, offset, take, cb(err, activities))
+### Engine.inbox(entity, offset, take, cb(err, activities))
 
 * * *
 
-### ActivityStream.post(entity, activity, cb(err))
-#### ActivityStream.put(entity, activity, cb(err))
-#### ActivityStream.spread(entity, activity, cb(err))
+### Engine.post(entity, activity, cb(err))
+#### Engine.put(entity, activity, cb(err))
+#### Engine.spread(entity, activity, cb(err))
 
 * * *
 
-### ActivityStream.unpost(entity, activity, cb(err))
-#### ActivityStream.unput(entity, activity, cb(err))
-#### ActivityStream.unspread(entity, activity, cb(err))
+### Engine.unpost(entity, activity, cb(err))
+#### Engine.unput(entity, activity, cb(err))
+#### Engine.unspread(entity, activity, cb(err))
 
 * * *
 
-### ActivityStream.follow(from, to, cb(err))
-#### ActivityStream.subscribe(from, to, cb(err))
-#### ActivityStream.sprinkle(from, to, cb(err))
+### Engine.follow(from, to, cb(err))
+#### Engine.subscribe(from, to, cb(err))
+#### Engine.sprinkle(from, to, cb(err))
 
 * * *
 
-### ActivityStream.unfollow(from, to, cb(err))
-#### ActivityStream.unsubscribe(from, to, cb(err))
-#### ActivityStream.nub(from, to, cb(err))
+### Engine.unfollow(from, to, cb(err))
+#### Engine.unsubscribe(from, to, cb(err))
+#### Engine.nub(from, to, cb(err))
