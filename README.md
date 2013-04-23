@@ -1,7 +1,10 @@
 # node-activity-engine
 
+WARNING: This project is still in alpha, use with caution.
+
 A nimble and follower aware fan out activity stream framework that uses
 Redis as backend.
+
 
 ## Why?
 
