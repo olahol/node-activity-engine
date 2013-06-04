@@ -1,11 +1,11 @@
-exports.version = "0.0.1"
-
 _     = require "underscore"
 redis = require "redis"
 async = require "async"
 idgen = require "idgen"
 
 timeNow = -> (new Date).getTime()
+
+exports.version = (require "../package.json").version
 
 exports.Engine = class Engine
   constructor: (options) ->
@@ -24,11 +24,14 @@ exports.Engine = class Engine
       cb null, uid
 
   lookup: (uid, cb) ->
+    ref = uid.split(":")[0] is "ref"
+    (uid = uid.split(":").slice(2).join(":")) if ref
     @redis.hget @formatKey("vault"), uid, (err, res) ->
       return cb(err) if err?
       return cb(new Error "uid #{uid} not found") unless res?
       data = JSON.parse res
       data.uid = uid
+      data.ref = ref
       cb null, data
 
   # Reading
@@ -72,6 +75,19 @@ exports.Engine = class Engine
       @unput "inbox", follower, uid, each
     , cb
 
+  reference: (entity, uid, cb, score = timeNow()) ->
+    ref = "ref:" + entity + ":" + uid
+    @put "sent", entity, ref, (err) =>
+      return cb(err) if err?
+      @spread entity, ref, cb, score
+    , score
+
+  unreference: (entity, uid, cb) ->
+    ref = "ref:" + entity + ":" + uid
+    @unput "sent", entity, ref, (err) =>
+      return cb(err) if err?
+      @unspread entity, ref, cb
+
   publish: (entity, data, cb, score = timeNow()) ->
     @insert entity, data, (err, uid) =>
       return cb(err) if err?
@@ -83,7 +99,10 @@ exports.Engine = class Engine
   post: (entity, data, cb, score = timeNow()) ->
     @publish entity, data, (err, uid) =>
       return cb(err) if err?
-      @spread entity, uid, cb, score
+      @spread entity, uid, (err) =>
+        return cb(err) if err?
+        cb null, uid
+      , score
     , score
 
   # Relations

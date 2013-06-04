@@ -1,9 +1,11 @@
 async = require "async"
-help = require "../src/help"
+help  = require "../src/help"
+_     = require "underscore"
 
 exports.module =
   setUp: help.setUp
   tearDown: help.tearDown
+
   testStorage: (test) ->
     @engine.insert @entity2, { msg: @string }, (err, uid) =>
       test.ifError err
@@ -12,6 +14,7 @@ exports.module =
         @engine.lookup @string, (err, data) =>
           test.ok err
           test.done()
+
   testReading: (test) ->
     @engine.sent @entity2, 0, 10, (err, data) =>
       test.ifError err
@@ -36,6 +39,7 @@ exports.module =
               par err
         ], (err) =>
           test.done()
+
   testRelations: (test) ->
     @engine.follow @entity1, @entity2, (err) =>
       async.timesSeries 10, (n, next) =>
@@ -55,3 +59,27 @@ exports.module =
                 test.equal data.length, 5
                 test.deepEqual (a.msg for a in data), [19,18,17,16,15]
                 test.done()
+
+  testReference: (test) ->
+    @engine.follow @entity2, @entity1, (err) =>
+      async.timesSeries 10, (n, next) =>
+        setTimeout =>
+          @engine.post @entity2, { msg: n }, (err, uid) =>
+            @engine.reference @entity1, uid, next
+        , 1
+      , (err) =>
+          @engine.sent @entity1, 0, 5, (err, data) =>
+            test.ifError err
+            test.equal data.length, 5
+            test.deepEqual (a.msg for a in data), [9,8,7,6,5]
+            test.ok _.all(a.ref for a in data)
+            @engine.inbox @entity2, 0, 5, (err, data) =>
+              test.ifError err
+              test.equal data.length, 5
+              test.deepEqual (a.msg for a in data), [9,8,7,6,5]
+              test.ok _.all(a.ref for a in data)
+              @engine.unfollow @entity2, @entity1, (err) =>
+                test.ifError err
+                @engine.inbox @entity2, 0, 5, (err, data) =>
+                  test.deepEqual data, []
+                  test.done()
